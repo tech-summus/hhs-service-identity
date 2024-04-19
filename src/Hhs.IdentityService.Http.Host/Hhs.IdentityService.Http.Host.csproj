@@ -7,15 +7,15 @@
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <RootNamespace>Hhs.IdentityService</RootNamespace>
     </PropertyGroup>
-
+    
     <ItemGroup>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3"/>
+        <ProjectReference Include="..\..\..\..\shared\src\Hhs.Shared.Hosting.Microservices\Hhs.Shared.Hosting.Microservices.csproj" />
     </ItemGroup>
-
+    
     <ItemGroup>
-      <Content Include="..\..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
+        <Content Include="..\..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
     </ItemGroup>
 
 </Project>
