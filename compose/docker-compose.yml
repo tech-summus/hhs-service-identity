@@ -1,0 +1,22 @@
+version: '3.7'
+
+services:
+  
+  hhs-service-identity:
+    build:
+      context: ../
+      dockerfile: src/Hhs.IdentityService.Http.Host/Dockerfile
+    container_name: hhs-service-identity_container
+    image: hhs-service-identity_image:latest
+    restart: always
+    ports:
+      - "7410:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=production
+    networks:
+      - hhs-network
+
+networks:
+  hhs-network:
+    name: hhs.infrastructure-network
+    external: true
