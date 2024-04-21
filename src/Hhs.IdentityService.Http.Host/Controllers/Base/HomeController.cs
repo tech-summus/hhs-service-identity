@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Hhs.IdentityService.Controllers;
+namespace Hhs.IdentityService.Controllers.Base;
 
 public sealed class HomeController : Controller
 {

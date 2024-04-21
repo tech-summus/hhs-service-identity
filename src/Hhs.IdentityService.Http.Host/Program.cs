@@ -1,4 +1,6 @@
+using Hhs.Shared.Hosting;
 using Microsoft.AspNetCore;
+using Serilog;
 
 namespace Hhs.IdentityService;
 
@@ -9,19 +11,30 @@ public static class Program
 
     public static async Task<int> Main(string[] args)
     {
-        var configuration = GetConfiguration();
+        Log.Logger = SerilogConfigurationHelper.Configure(AppName);
 
         try
         {
-            var host = CreateHostBuilder(configuration, args);
+            Log.Information("Configuring web host ({ApplicationContext})...", AppName);
+            var host = CreateHostBuilder(GetConfiguration(), args);
 
+            using (var scope = host.Services.CreateScope())
+            {
+            }
+
+            Log.Information("Starting web host ({ApplicationContext})...", AppName);
             await host.RunAsync();
 
             return 0;
         }
         catch (Exception ex)
         {
+            Log.Fatal(ex, "Program terminated unexpectedly ({ApplicationContext})!", AppName);
             return 1;
+        }
+        finally
+        {
+            await Log.CloseAndFlushAsync();
         }
     }
 
@@ -39,7 +52,7 @@ public static class Program
             .ConfigureLogging(logging =>
             {
                 logging.ClearProviders();
-                logging.AddConsole();
+                logging.AddSerilog(Log.Logger);
             })
             .Build();
 
