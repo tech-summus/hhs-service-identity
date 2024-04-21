@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <Import Project="..\..\common.version.props" />
+    <Import Project="..\..\common.props" />
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <PackageId>Hhs.IdentityService.Domain</PackageId>
+        <RootNamespace>Hhs.IdentityService.Domain</RootNamespace>
+        <Title>TechSummus Hhs Identity Service Domain</Title>
+        <Description>TechSummus Hhs Identity Service Domain</Description>
+        <PackageTags>TechSummus Hhs Identity Service Domain</PackageTags>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="HsnSoft.Base.Ddd.Domain" Version="$(HsnSoftFrameworkVersion)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Hhs.Shared.Helper" Version="$(HhsSharedVersion)" />
+        <!--<ProjectReference Include="..\..\..\..\shared\src\Hhs.Shared.Helper\Hhs.Shared.Helper.csproj" />-->
+    </ItemGroup>
+
+</Project>

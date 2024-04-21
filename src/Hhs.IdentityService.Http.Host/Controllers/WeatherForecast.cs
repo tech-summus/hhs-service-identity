@@ -1,4 +1,4 @@
-namespace Hhs.IdentityService;
+namespace Hhs.IdentityService.Controllers;
 
 public class WeatherForecast
 {
