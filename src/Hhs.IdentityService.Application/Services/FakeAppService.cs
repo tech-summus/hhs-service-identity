@@ -131,13 +131,13 @@ public sealed class FakeAppService : IdentityServiceAppService, IFakeAppService
         if (_settings.OperationSucceeded)
         {
             Thread.Sleep(5000);
-            await UpdateAsync(new FakeUpdateDto { Id = placedFake.Id, FakeDate = placedFake.FakeDate, FakeState = FakeState.ResultSuccess });
+            await UpdateAsync(new FakeUpdateDto { Id = placedFake.Id, FakeDate = placedFake.FakeDate, FakeCode = placedFake.FakeCode, FakeState = FakeState.ResultSuccess });
             operationResultIntegrationEvent = new OperationSucceededEto(placedFake.Id);
         }
         else
         {
             Thread.Sleep(5000);
-            await UpdateAsync(new FakeUpdateDto { Id = placedFake.Id, FakeDate = placedFake.FakeDate, FakeState = FakeState.ResultFail });
+            await UpdateAsync(new FakeUpdateDto { Id = placedFake.Id, FakeDate = placedFake.FakeDate, FakeCode = placedFake.FakeCode, FakeState = FakeState.ResultFail });
             operationResultIntegrationEvent = new OperationFailedEto(placedFake.Id);
         }
 
