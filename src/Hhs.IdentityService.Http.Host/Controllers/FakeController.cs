@@ -12,7 +12,7 @@ namespace Hhs.IdentityService.Controllers;
 
 [ControllerName("Fake")]
 [Route("api/administration-service/v1/commercial/fakes")]
-public sealed class FakeController : IdentityServiceController, IFakeAppService
+public sealed class FakeController : IdentityServiceController
 {
     private readonly IFakeAppService _fakeAppService;
 

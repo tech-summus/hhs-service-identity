@@ -2,10 +2,11 @@ using Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos;
 using Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos.Filters;
 using Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos.Submits;
 using HsnSoft.Base.Application.Dtos;
+using HsnSoft.Base.EventBus;
 
 namespace Hhs.IdentityService.Application.Contracts.FakeDomain.Interfaces;
 
-public interface IFakeAppService
+public interface IFakeAppService: IEventApplicationService
 {
     Task<FakeDto> GetAsync(Guid id);
 
