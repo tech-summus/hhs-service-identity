@@ -26,7 +26,7 @@ public sealed class Startup
     {
         services.ConfigureMicroserviceHost()
             .AddMicroserviceMvc(Configuration, typeof(Startup))
-            .AddMicroserviceEventBus(Configuration)
+            .AddMicroserviceEventBus(Configuration, typeof(EventHandlersAssemblyMarker).Assembly)
             .AddMicroserviceHealthChecks(Configuration, IdentityServiceDbProperties.ConnectionStringName);
 
         services.Configure<FakeSettings>(Configuration.GetSection("FakeSettings"));
@@ -81,7 +81,7 @@ public sealed class Startup
         });
 
         // Subscribe all event handlers
-        app.UseEventBus(typeof(IdentityServiceAppService).Assembly);
+        app.UseEventBus(typeof(EventHandlersAssemblyMarker).Assembly);
     }
 
     private void AddIdentityServiceInfrastructures(IServiceCollection services)

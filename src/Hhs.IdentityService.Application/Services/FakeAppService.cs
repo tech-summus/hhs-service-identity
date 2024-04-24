@@ -11,7 +11,6 @@ using Hhs.IdentityService.Domain.FakeDomain.Repositories;
 using Hhs.IdentityService.Domain.FakeDomain.Services;
 using HsnSoft.Base;
 using HsnSoft.Base.Application.Dtos;
-using HsnSoft.Base.DependencyInjection;
 using HsnSoft.Base.Domain.Entities.Events;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -25,7 +24,7 @@ public sealed class FakeAppService : IdentityServiceAppService, IFakeAppService
     private readonly IFakeReadOnlyRepository _fakeRepository;
     private readonly FakeManager _fakeManager;
 
-    public FakeAppService(IBaseLazyServiceProvider provider,
+    public FakeAppService(IServiceProvider provider,
         ILogger<FakeAppService> logger,
         IOptions<FakeSettings> settings,
         IFakeReadOnlyRepository fakeRepository,
@@ -141,7 +140,7 @@ public sealed class FakeAppService : IdentityServiceAppService, IFakeAppService
             operationResultIntegrationEvent = new OperationFailedEto(placedFake.Id);
         }
 
-        await PublishEventAsync(operationResultIntegrationEvent);
+        await EventBus.PublishAsync(parentMessage: ParentIntegrationEvent, eventMessage: operationResultIntegrationEvent);
 
         return Mapper.Map<Fake, FakeDto>(placedFake);
     }

@@ -4,6 +4,7 @@ using HsnSoft.Base.DependencyInjection;
 using HsnSoft.Base.Domain.Entities.Events;
 using HsnSoft.Base.EventBus;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Hhs.IdentityService.Application;
@@ -17,20 +18,20 @@ public abstract class IdentityServiceAppService : BaseApplicationService, IEvent
     protected IMapper Mapper { get; }
 
     [NotNull]
-    private IEventBus EventBus { get; }
+    protected IEventBus EventBus { get; }
 
     [CanBeNull]
-    private ParentMessageEnvelope ParentIntegrationEvent { get; set; }
+    protected ParentMessageEnvelope ParentIntegrationEvent { get; private set; }
 
-    protected IdentityServiceAppService(IBaseLazyServiceProvider provider)
+    protected IdentityServiceAppService(IServiceProvider provider)
     {
-        LazyServiceProvider = provider;
+        LazyServiceProvider = provider.GetRequiredService<IBaseLazyServiceProvider>();
 
-        var loggerFactory = LazyServiceProvider.LazyGetRequiredService<ILoggerFactory>();
+        var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
         Logger = loggerFactory.CreateLogger("ContentService");
 
-        Mapper = LazyServiceProvider.LazyGetRequiredService<IMapper>();
-        EventBus = LazyServiceProvider.LazyGetRequiredService<IEventBus>();
+        Mapper = provider.GetRequiredService<IMapper>();
+        EventBus = provider.GetRequiredService<IEventBus>();
     }
 
     public void SetParentIntegrationEvent<T>(MessageEnvelope<T> @event) where T : IIntegrationEventMessage
@@ -46,7 +47,4 @@ public abstract class IdentityServiceAppService : BaseApplicationService, IEvent
             Producer = @event.Producer
         };
     }
-
-    protected async Task PublishEventAsync(IIntegrationEventMessage eventMessage)
-        => await EventBus?.PublishAsync(eventMessage, ParentIntegrationEvent)!;
 }
