@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using HsnSoft.Base.Application.Services;
-using HsnSoft.Base.DependencyInjection;
 using HsnSoft.Base.Domain.Entities.Events;
 using HsnSoft.Base.EventBus;
 using JetBrains.Annotations;
@@ -25,10 +24,8 @@ public abstract class IdentityServiceAppService : BaseApplicationService, IEvent
 
     protected IdentityServiceAppService(IServiceProvider provider)
     {
-        LazyServiceProvider = provider.GetRequiredService<IBaseLazyServiceProvider>();
-
         var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-        Logger = loggerFactory.CreateLogger("ContentService");
+        Logger = loggerFactory.CreateLogger("IdentityService");
 
         Mapper = provider.GetRequiredService<IMapper>();
         EventBus = provider.GetRequiredService<IEventBus>();

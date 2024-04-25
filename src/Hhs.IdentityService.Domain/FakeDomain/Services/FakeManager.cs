@@ -2,7 +2,6 @@ using Hhs.IdentityService.Domain.Enums;
 using Hhs.IdentityService.Domain.FakeDomain.Entities;
 using Hhs.IdentityService.Domain.FakeDomain.Exceptions;
 using Hhs.IdentityService.Domain.FakeDomain.Repositories;
-using HsnSoft.Base.DependencyInjection;
 using JetBrains.Annotations;
 
 namespace Hhs.IdentityService.Domain.FakeDomain.Services;
@@ -11,7 +10,7 @@ public sealed class FakeManager : IdentityServiceManager
 {
     private readonly IFakeManagerRepository _fakeManagerRepository;
 
-    public FakeManager(IBaseLazyServiceProvider provider,
+    public FakeManager(IServiceProvider provider,
         IFakeManagerRepository fakeManagerRepository) : base(provider)
     {
         _fakeManagerRepository = fakeManagerRepository;

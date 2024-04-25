@@ -1,5 +1,4 @@
 ﻿using HsnSoft.Base.AspNetCore.Mvc;
-using HsnSoft.Base.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hhs.IdentityService.Controllers.Base;
@@ -9,8 +8,8 @@ namespace Hhs.IdentityService.Controllers.Base;
 [ApiController]
 public abstract class IdentityServiceController : ApiControllerBase
 {
-    protected IdentityServiceController(IBaseLazyServiceProvider provider)
+    protected IdentityServiceController(IServiceProvider provider)
     {
-        LazyServiceProvider = provider;
+        ServiceProvider = provider;
     }
 }

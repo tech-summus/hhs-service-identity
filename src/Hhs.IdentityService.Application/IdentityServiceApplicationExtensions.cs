@@ -10,7 +10,7 @@ public static class IdentityServiceApplicationExtensions
     {
         services.AddAutoMapper(typeof(IdentityServiceApplicationAutoMapperProfile));
 
-        services.AddTransient<IFakeAppService, FakeAppService>();
+        services.AddSingleton<IFakeAppService, FakeAppService>();
 
         return services;
     }

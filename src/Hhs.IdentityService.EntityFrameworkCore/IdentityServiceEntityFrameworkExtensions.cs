@@ -21,10 +21,10 @@ public static class IdentityServiceEntityFrameworkExtensions
             });
         });
 
+        services.AddSingleton<FakeManager>();
 
-        services.AddTransient<IFakeReadOnlyRepository, EfCoreFakeRepository>();
-        services.AddTransient<IFakeManagerRepository, EfCoreFakeRepository>();
-        services.AddTransient<FakeManager>();
+        services.AddScoped<IFakeReadOnlyRepository, EfCoreFakeRepository>();
+        services.AddScoped<IFakeManagerRepository, EfCoreFakeRepository>();
 
         return services;
     }

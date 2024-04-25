@@ -1,5 +1,4 @@
 using System.Net;
-using Hhs.IdentityService.Application.Contracts.Events;
 using Hhs.IdentityService.Application.Contracts.FakeDomain;
 using Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos;
 using Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos.Filters;
@@ -11,7 +10,6 @@ using Hhs.IdentityService.Domain.FakeDomain.Repositories;
 using Hhs.IdentityService.Domain.FakeDomain.Services;
 using HsnSoft.Base;
 using HsnSoft.Base.Application.Dtos;
-using HsnSoft.Base.Domain.Entities.Events;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -123,24 +121,6 @@ public sealed class FakeAppService : IdentityServiceAppService, IFakeAppService
             fakeCode: input.FakeCode ?? string.Empty,
             fakeState: input.FakeState ?? FakeState.WaitForApprove
         );
-
-        //TODO: OPERATION WILL BE INTEGRATED
-        IIntegrationEventMessage operationResultIntegrationEvent;
-        // The operation can be successful or it can fail
-        if (_settings.OperationSucceeded)
-        {
-            Thread.Sleep(5000);
-            await UpdateAsync(new FakeUpdateDto { Id = placedFake.Id, FakeDate = placedFake.FakeDate, FakeCode = placedFake.FakeCode, FakeState = FakeState.ResultSuccess });
-            operationResultIntegrationEvent = new OperationSucceededEto(placedFake.Id);
-        }
-        else
-        {
-            Thread.Sleep(5000);
-            await UpdateAsync(new FakeUpdateDto { Id = placedFake.Id, FakeDate = placedFake.FakeDate, FakeCode = placedFake.FakeCode, FakeState = FakeState.ResultFail });
-            operationResultIntegrationEvent = new OperationFailedEto(placedFake.Id);
-        }
-
-        await EventBus.PublishAsync(parentMessage: ParentIntegrationEvent, eventMessage: operationResultIntegrationEvent);
 
         return Mapper.Map<Fake, FakeDto>(placedFake);
     }

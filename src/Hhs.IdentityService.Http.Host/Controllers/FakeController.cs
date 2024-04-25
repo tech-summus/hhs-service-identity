@@ -5,7 +5,6 @@ using Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos.Submits;
 using Hhs.IdentityService.Application.Contracts.FakeDomain.Interfaces;
 using Hhs.IdentityService.Controllers.Base;
 using HsnSoft.Base.Application.Dtos;
-using HsnSoft.Base.DependencyInjection;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hhs.IdentityService.Controllers;
@@ -16,7 +15,7 @@ public sealed class FakeController : IdentityServiceController
 {
     private readonly IFakeAppService _fakeAppService;
 
-    public FakeController(IBaseLazyServiceProvider provider, IFakeAppService fakeAppService) : base(provider)
+    public FakeController(IServiceProvider provider, IFakeAppService fakeAppService) : base(provider)
     {
         _fakeAppService = fakeAppService;
     }
