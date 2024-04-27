@@ -44,7 +44,7 @@ public sealed class Startup
         return new AutofacServiceProvider(container.Build());
     }
 
-    public void Configure(IApplicationBuilder app)
+    public void Configure(IApplicationBuilder app, IHostApplicationLifetime hostApplicationLifetime)
     {
         if (!WebHostEnvironment.IsProduction())
         {
@@ -82,6 +82,13 @@ public sealed class Startup
 
         // Subscribe all event handlers
         app.UseEventBus(typeof(EventHandlersAssemblyMarker).Assembly);
+
+        hostApplicationLifetime.ApplicationStopping.Register(OnShutdown);
+    }
+
+    private void OnShutdown()
+    {
+        Console.WriteLine("Application stopping...");
     }
 
     private void AddIdentityServiceInfrastructures(IServiceCollection services)
