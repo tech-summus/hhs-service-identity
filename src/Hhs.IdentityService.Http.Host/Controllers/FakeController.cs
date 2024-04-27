@@ -9,8 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hhs.IdentityService.Controllers;
 
-[ControllerName("Fake")]
-[Route("api/administration-service/v1/commercial/fakes")]
+[Route("api/identity-service/v1/commercial/fakes")]
 public sealed class FakeController : IdentityServiceController
 {
     private readonly IFakeAppService _fakeAppService;
