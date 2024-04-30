@@ -2,8 +2,8 @@
     <PropertyGroup>
         <LangVersion>latest</LangVersion>
         <Version>2024.6.1</Version>
-        <HhsSharedVersion>2024.6.1-dev.16</HhsSharedVersion>
-        <HsnSoftFrameworkVersion>2024.6.28</HsnSoftFrameworkVersion>
+        <HhsSharedVersion>2024.6.1-dev.18</HhsSharedVersion>
+        <HsnSoftFrameworkVersion>2024.6.31</HsnSoftFrameworkVersion>
         <MicrosoftPackageVersion>8.0.0</MicrosoftPackageVersion>
         <MicrosoftAspNetCorePackageVersion>6.0.29</MicrosoftAspNetCorePackageVersion>
         <MicrosoftEntityFrameworkCorePackageVersion>7.0.18</MicrosoftEntityFrameworkCorePackageVersion>
