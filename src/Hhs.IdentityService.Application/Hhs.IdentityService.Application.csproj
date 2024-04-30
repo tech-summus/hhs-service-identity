@@ -20,8 +20,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Hhs.Shared.Domain" Version="$(HhsSharedVersion)" />
-        <!--<ProjectReference Include="..\..\..\..\shared\src\Hhs.Shared.Domain\Hhs.Shared.Domain.csproj" />-->
+        <PackageReference Include="Hhs.Shared.Contracts" Version="$(HhsSharedVersion)" />
+        <!--<ProjectReference Include="..\..\..\..\shared\src\Hhs.Shared.Contracts\Hhs.Shared.Contracts.csproj" />-->
     </ItemGroup>
 
     <ItemGroup>
