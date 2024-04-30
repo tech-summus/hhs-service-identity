@@ -21,7 +21,7 @@ public static class IdentityServiceEntityFrameworkExtensions
             });
         });
 
-        services.AddSingleton<FakeManager>();
+        services.AddScoped<FakeManager>();
 
         services.AddScoped<IFakeReadOnlyRepository, EfCoreFakeRepository>();
         services.AddScoped<IFakeManagerRepository, EfCoreFakeRepository>();
