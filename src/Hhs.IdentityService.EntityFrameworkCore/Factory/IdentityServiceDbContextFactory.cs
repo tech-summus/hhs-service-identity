@@ -12,6 +12,7 @@ internal sealed class IdentityServiceDbContextFactory : IDesignTimeDbContextFact
             .UseNpgsql(DbContextFactoryHelper.GetConnectionStringFromConfiguration(), b =>
             {
                 b.MigrationsHistoryTable("__EFMigrationsHistory");
+                b.MigrationsAssembly(typeof(IdentityServiceDbContext).Assembly.GetName().Name);
             });
 
         return new IdentityServiceDbContext(null, builder.Options);

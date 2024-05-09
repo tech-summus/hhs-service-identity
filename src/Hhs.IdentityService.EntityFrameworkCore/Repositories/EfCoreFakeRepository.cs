@@ -1,21 +1,20 @@
+using System.Linq.Dynamic.Core;
 using Hhs.IdentityService.Domain.Enums;
 using Hhs.IdentityService.Domain.FakeDomain.Consts;
 using Hhs.IdentityService.Domain.FakeDomain.Entities;
 using Hhs.IdentityService.Domain.FakeDomain.Exceptions;
+using Hhs.IdentityService.Domain.FakeDomain.Repositories;
+using Hhs.IdentityService.EntityFrameworkCore.Context;
+using HsnSoft.Base.Domain.Repositories.EntityFrameworkCore;
 using JetBrains.Annotations;
-using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
-namespace Hhs.IdentityService.Domain.FakeDomain.Services;
+namespace Hhs.IdentityService.EntityFrameworkCore.Repositories;
 
-public sealed class FakeDomainService : DomainServiceBase
+public sealed class EfCoreFakeRepository : EfCoreGenericRepository<IdentityServiceDbContext, Fake, Guid>, IFakeRepository
 {
-    private readonly ILogger _logger;
-    private readonly IDomainGenericRepository<Fake> _fakeRepository;
-
-    public FakeDomainService(IServiceProvider provider, IDomainGenericRepository<Fake> fakeRepository) : base(provider)
+    public EfCoreFakeRepository(IServiceProvider provider, IdentityServiceDbContext dbContext) : base(provider, dbContext)
     {
-        _logger = LoggerFactory.CreateLogger<FakeDomainService>();
-        _fakeRepository = fakeRepository;
     }
 
     public async Task<Fake> CreateAsync(
@@ -50,7 +49,7 @@ public sealed class FakeDomainService : DomainServiceBase
         // Rule01
         // Rule02
 
-        return await _fakeRepository.InsertAsync(draftFake, cancellationToken);
+        return await InsertAsync(draftFake, cancellationToken);
     }
 
     public async Task<Fake> UpdateAsync(Guid id,
@@ -59,10 +58,9 @@ public sealed class FakeDomainService : DomainServiceBase
         FakeState fakeState,
         CancellationToken cancellationToken = default)
     {
-        var oldFake = await _fakeRepository.FindAsync(id, false, cancellationToken);
+        var oldFake = await FindAsync(id, false, cancellationToken);
         if (oldFake == null)
         {
-            _logger.LogDebug("Fake entity not found [{FakeId}]", id);
             throw new FakeNotFoundException(id.ToString());
         }
 
@@ -74,15 +72,14 @@ public sealed class FakeDomainService : DomainServiceBase
         // Rule01
         // Rule02
 
-        return await _fakeRepository.UpdateAsync(oldFake, cancellationToken);
+        return await UpdateAsync(oldFake, cancellationToken);
     }
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var fake = await _fakeRepository.FindAsync(id, false, cancellationToken);
+        var fake = await FindAsync(id, false, cancellationToken);
         if (fake == null)
         {
-            _logger.LogDebug("Fake entity not found [{FakeId}]", id);
             throw new FakeNotFoundException(id.ToString());
         }
 
@@ -98,15 +95,10 @@ public sealed class FakeDomainService : DomainServiceBase
 
         fake.SetFakeCode(uniqueField);
         fake.IsDeleted = true;
-        await _fakeRepository.UpdateAsync(fake, cancellationToken);
+        await UpdateAsync(fake, cancellationToken);
     }
 
-    public async Task<Fake> FindAsync(Guid fakeId, CancellationToken cancellationToken = default)
-    {
-        return await _fakeRepository.FindAsync(fakeId, cancellationToken: cancellationToken);
-    }
-
-      public async Task<List<Fake>> GetPagedListWithFiltersAsync(
+    public async Task<List<Fake>> GetPagedListWithFiltersAsync(
         DateTime? fakeDate = null,
         [CanBeNull] string fakeCode = null,
         FakeState? fakeState = null,
@@ -117,19 +109,17 @@ public sealed class FakeDomainService : DomainServiceBase
         CancellationToken cancellationToken = default
     )
     {
-        throw new NotImplementedException();
-        //
-        // var queryable = includeDetails
-        //     ? await WithDetailsAsync(DefaultPropertySelector?.ToArray())
-        //     : await GetQueryableAsync();
-        //
-        // var query = ApplyFilter(queryable, null,
-        //     fakeDate, fakeCode, fakeState);
-        //
-        // return await query
-        //     .OrderBy(string.IsNullOrWhiteSpace(sorting) ? FakeConsts.GetDefaultSorting(false) : sorting)
-        //     .PageBy(skipCount, maxResultCount)
-        //     .ToListAsync(GetCancellationToken(cancellationToken));
+        var queryable = includeDetails
+            ? WithDetails(DefaultPropertySelector?.ToArray())
+            : GetQueryable();
+
+        var query = ApplyFilter(queryable, null,
+            fakeDate, fakeCode, fakeState);
+
+        return await query
+            .OrderBy(string.IsNullOrWhiteSpace(sorting) ? FakeConsts.GetDefaultSorting(false) : sorting)
+            .PageBy(skipCount, maxResultCount)
+            .ToListAsync(GetCancellationToken(cancellationToken));
     }
 
     public async Task<long> GetCountWithFiltersAsync(
@@ -139,11 +129,10 @@ public sealed class FakeDomainService : DomainServiceBase
         CancellationToken cancellationToken = default
     )
     {
-        throw new NotImplementedException();
-        // var query = ApplyFilter(await GetQueryableAsync(), null,
-        //     fakeDate, fakeCode, fakeState);
-        //
-        // return await query.LongCountAsync(GetCancellationToken(cancellationToken));
+        var query = ApplyFilter(GetQueryable(), null,
+            fakeDate, fakeCode, fakeState);
+
+        return await query.LongCountAsync(GetCancellationToken(cancellationToken));
     }
 
     public async Task<List<Fake>> GetFilterListAsync(
@@ -155,17 +144,16 @@ public sealed class FakeDomainService : DomainServiceBase
         CancellationToken cancellationToken = default
     )
     {
-        throw new NotImplementedException();
-        // var queryable = includeDetails
-        //     ? await WithDetailsAsync(DefaultPropertySelector?.ToArray())
-        //     : await GetQueryableAsync();
-        //
-        // var query = ApplyFilter(queryable, null,
-        //     fakeDate, fakeCode, fakeState);
-        //
-        // return await query
-        //     .OrderBy(string.IsNullOrWhiteSpace(sorting) ? FakeConsts.GetDefaultSorting(false) : sorting)
-        //     .ToListAsync(GetCancellationToken(cancellationToken));
+        var queryable = includeDetails
+            ? WithDetails(DefaultPropertySelector?.ToArray())
+            : GetQueryable();
+
+        var query = ApplyFilter(queryable, null,
+            fakeDate, fakeCode, fakeState);
+
+        return await query
+            .OrderBy(string.IsNullOrWhiteSpace(sorting) ? FakeConsts.GetDefaultSorting(false) : sorting)
+            .ToListAsync(GetCancellationToken(cancellationToken));
     }
 
     public async Task<List<Fake>> GetSearchListAsync(
@@ -175,13 +163,12 @@ public sealed class FakeDomainService : DomainServiceBase
         CancellationToken cancellationToken = default
     )
     {
-        throw new NotImplementedException();
-        // var query = ApplyFilter(await GetQueryableAsync(), searchText);
-        //
-        // return await query
-        //     .OrderBy(string.IsNullOrWhiteSpace(sorting) ? FakeConsts.GetDefaultSorting(false) : sorting)
-        //     .PageBy(0, maxResultCount)
-        //     .ToListAsync(GetCancellationToken(cancellationToken));
+        var query = ApplyFilter(GetQueryable(), searchText);
+
+        return await query
+            .OrderBy(string.IsNullOrWhiteSpace(sorting) ? FakeConsts.GetDefaultSorting(false) : sorting)
+            .PageBy(0, maxResultCount)
+            .ToListAsync(GetCancellationToken(cancellationToken));
     }
 
     private IQueryable<Fake> ApplyFilter(

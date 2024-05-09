@@ -1,7 +1,6 @@
 using Hhs.IdentityService.EntityFrameworkCore.Context;
 using HsnSoft.Base.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -25,11 +24,7 @@ public sealed class EfCoreSeederService : IBasicDataSeeder
 
         try
         {
-            var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
-            var connectionStr = configuration.GetConnectionString(EfCoreDbProperties.ConnectionStringName);
-
             var dbContext = scope.ServiceProvider.GetRequiredService<IdentityServiceDbContext>();
-            dbContext.Database.SetConnectionString(connectionStr);
 
             if (dbContext.Database.CanConnectAsync(cancellationToken).GetAwaiter().GetResult())
             {

@@ -1,5 +1,4 @@
 using AutoMapper;
-using Hhs.IdentityService.Application.Contracts.FakeDomain;
 using Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos;
 using Hhs.IdentityService.Domain.FakeDomain.Entities;
 

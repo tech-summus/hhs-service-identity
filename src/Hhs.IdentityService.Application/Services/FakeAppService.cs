@@ -6,7 +6,7 @@ using Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos.Submits;
 using Hhs.IdentityService.Application.Contracts.FakeDomain.Interfaces;
 using Hhs.IdentityService.Domain.Enums;
 using Hhs.IdentityService.Domain.FakeDomain.Entities;
-using Hhs.IdentityService.Domain.FakeDomain.Services;
+using Hhs.IdentityService.Domain.FakeDomain.Repositories;
 using HsnSoft.Base;
 using HsnSoft.Base.Application.Dtos;
 using Microsoft.Extensions.Logging;
@@ -17,15 +17,15 @@ namespace Hhs.IdentityService.Application.Services;
 public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
 {
     private readonly ILogger _logger;
-    private readonly FakeDomainService _fakeDomainService;
+    private readonly IFakeRepository _fakeRepository;
 
     public FakeAppService(IServiceProvider provider,
         IOptions<FakeSettings> settings,
-        FakeDomainService fakeDomainService
+        IFakeRepository fakeRepository
     ) : base(provider)
     {
         _logger = LoggerFactory.CreateLogger<FakeAppService>();
-        _fakeDomainService = fakeDomainService;
+        _fakeRepository = fakeRepository;
 
         _logger.LogTrace("FakeSettings: {@FakeSettings}", settings.Value);
     }
@@ -37,7 +37,7 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        var item = await _fakeDomainService.FindAsync(id);
+        var item = await _fakeRepository.FindAsync(id);
         if (item == null)
         {
             throw new BaseHttpException((int)HttpStatusCode.NotFound);
@@ -53,9 +53,9 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        var totalCount = await _fakeDomainService.GetCountWithFiltersAsync(null, pagedInput.FakeCode, pagedInput.FakeState);
+        var totalCount = await _fakeRepository.GetCountWithFiltersAsync(null, pagedInput.FakeCode, pagedInput.FakeState);
 
-        var items = await _fakeDomainService.GetPagedListWithFiltersAsync(null, pagedInput.FakeCode, pagedInput.FakeState,
+        var items = await _fakeRepository.GetPagedListWithFiltersAsync(null, pagedInput.FakeCode, pagedInput.FakeState,
             pagedInput.Sorting, pagedInput.MaxResultCount, pagedInput.SkipCount, true);
 
         if (items == null)
@@ -73,7 +73,7 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        var items = await _fakeDomainService.GetFilterListAsync(null, filterInput.FakeCode, filterInput.FakeState,
+        var items = await _fakeRepository.GetFilterListAsync(null, filterInput.FakeCode, filterInput.FakeState,
             filterInput.Sorting, true);
 
         if (items == null)
@@ -91,7 +91,7 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        var items = await _fakeDomainService.GetSearchListAsync(searchInput.SearchText,
+        var items = await _fakeRepository.GetSearchListAsync(searchInput.SearchText,
             searchInput.Sorting, searchInput.MaxResultCount);
 
         if (items == null)
@@ -109,7 +109,7 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        var placedFake = await _fakeDomainService.CreateAsync(
+        var placedFake = await _fakeRepository.CreateAsync(
             fakeDate: input.FakeDate ?? DateTime.Now,
             fakeCode: input.FakeCode ?? string.Empty,
             fakeState: input.FakeState ?? FakeState.WaitForApprove
@@ -125,7 +125,7 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        var fake = await _fakeDomainService.UpdateAsync(
+        var fake = await _fakeRepository.UpdateAsync(
             id: input.Id,
             fakeDate: input.FakeDate ?? DateTime.Now,
             fakeCode: input.FakeCode ?? string.Empty,
@@ -144,7 +144,7 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        await _fakeDomainService.DeleteAsync(id);
+        await _fakeRepository.DeleteAsync(id);
 
         //INTEGRATION EVENT TRIGGER
         //

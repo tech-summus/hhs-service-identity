@@ -1,5 +1,4 @@
-using Hhs.IdentityService.Domain;
-using Hhs.IdentityService.Domain.FakeDomain.Services;
+using Hhs.IdentityService.Domain.FakeDomain.Repositories;
 using Hhs.IdentityService.EntityFrameworkCore.Context;
 using Hhs.IdentityService.EntityFrameworkCore.Repositories;
 using HsnSoft.Base.Auditing;
@@ -22,8 +21,7 @@ public static class EfCoreServiceCollectionExtensions
 
         services.AddDbContext<IdentityServiceDbContext>(options =>
             {
-                options.UseNpgsql(configuration.GetConnectionString(
-                    configuration.GetConnectionString(EfCoreDbProperties.ConnectionStringName)!), sqlOptions =>
+                options.UseNpgsql(configuration.GetConnectionString(EfCoreDbProperties.ConnectionStringName), sqlOptions =>
                 {
                     sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory");
                     sqlOptions.MigrationsAssembly(typeof(IdentityServiceDbContext).Assembly.GetName().Name);
@@ -33,13 +31,13 @@ public static class EfCoreServiceCollectionExtensions
                 });
                 // options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
                 options.EnableSensitiveDataLogging(false);
-            }, optionsLifetime: ServiceLifetime.Singleton
+            }
+            , contextLifetime: ServiceLifetime.Scoped   // Must be Scoped => Cannot consume any scoped service and CurrentUser object creation on constructor
+            , optionsLifetime: ServiceLifetime.Singleton
         );
 
         // Must be Scoped => Cannot consume any scoped service and CurrentUser object creation on constructor
-        services.AddScoped(typeof(IDomainGenericRepository<>), typeof(DomainEfCoreGenericRepository<>));
-
-        services.AddScoped<FakeDomainService>();
+        services.AddScoped<IFakeRepository, EfCoreFakeRepository>();
 
         return services;
     }
