@@ -7,7 +7,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <PackageId>Hhs.IdentityService.EntityFrameworkCore</PackageId>
-        <RootNamespace>Hhs.IdentityService</RootNamespace>
+        <RootNamespace>Hhs.IdentityService.EntityFrameworkCore</RootNamespace>
         <Title>TechSummus Hhs Identity Service EntityFrameworkCore</Title>
         <Description>TechSummus Hhs Identity Service EntityFrameworkCore</Description>
         <PackageTags>TechSummus Hhs Identity Service EntityFrameworkCore</PackageTags>

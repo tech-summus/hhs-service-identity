@@ -1,4 +1,5 @@
 using Hhs.IdentityService.Domain.Enums;
+using Hhs.IdentityService.Domain.FakeDomain.Consts;
 using HsnSoft.Base;
 using HsnSoft.Base.Domain.Entities.Auditing;
 using JetBrains.Annotations;

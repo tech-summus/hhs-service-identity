@@ -4,16 +4,12 @@ using HsnSoft.Base.Domain.Entities.Events;
 using HsnSoft.Base.EventBus;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace Hhs.IdentityService.Application;
 
-public abstract class IdentityServiceAppService : BaseApplicationService, IEventApplicationService
+public abstract class ApplicationServiceBase : ApplicationService, IEventApplicationService
 {
-    [NotNull]
-    protected ILogger Logger { get; }
-
     [NotNull]
     protected IMapper Mapper { get; }
 
@@ -23,13 +19,11 @@ public abstract class IdentityServiceAppService : BaseApplicationService, IEvent
     [CanBeNull]
     protected ParentMessageEnvelope ParentIntegrationEvent { get; private set; }
 
-    protected IdentityServiceAppService(IServiceProvider provider)
+    protected ApplicationServiceBase(IServiceProvider provider) : base(provider)
     {
-        var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
-        Logger = loggerFactory.CreateLogger("IdentityService");
-
-        Mapper = provider.GetRequiredService<IMapper>();
-        EventBus = provider.GetRequiredService<IEventBus>();
+        var serviceProvider = provider ?? throw new ArgumentNullException(nameof(provider), "ApplicationServiceBase IServiceProvider is null");
+        Mapper = serviceProvider.GetRequiredService<IMapper>();
+        EventBus = serviceProvider.GetRequiredService<IEventBus>();
     }
 
     public void SetParentIntegrationEvent<T>(MessageEnvelope<T> @event) where T : IIntegrationEventMessage

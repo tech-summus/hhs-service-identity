@@ -1,8 +1,8 @@
-using Hhs.IdentityService.EntityFrameworkCore;
+using Hhs.IdentityService.EntityFrameworkCore.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Hhs.IdentityService.Migrations;
+namespace Hhs.IdentityService.EntityFrameworkCore.Factory;
 
 internal sealed class IdentityServiceDbContextFactory : IDesignTimeDbContextFactory<IdentityServiceDbContext>
 {
@@ -14,6 +14,6 @@ internal sealed class IdentityServiceDbContextFactory : IDesignTimeDbContextFact
                 b.MigrationsHistoryTable("__EFMigrationsHistory");
             });
 
-        return new IdentityServiceDbContext(builder.Options);
+        return new IdentityServiceDbContext(null, builder.Options);
     }
 }

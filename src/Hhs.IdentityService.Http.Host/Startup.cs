@@ -1,13 +1,10 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using HealthChecks.UI.Client;
 using Hhs.IdentityService.Application;
-using Hhs.IdentityService.Application.Contracts.FakeDomain;
-using Hhs.IdentityService.Domain;
+using Hhs.IdentityService.EntityFrameworkCore;
 using Hhs.Shared.Hosting;
 using Hhs.Shared.Hosting.Microservices;
 using Hhs.Shared.Hosting.Microservices.Middlewares;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace Hhs.IdentityService;
 
@@ -25,17 +22,14 @@ public sealed class Startup
     public IServiceProvider ConfigureServices(IServiceCollection services)
     {
         services.ConfigureMicroserviceHost()
-            .AddMicroserviceMvc(Configuration, typeof(Startup))
+            .AddAdvancedController(Configuration, typeof(Startup))
             .AddMicroserviceEventBus(Configuration, typeof(EventHandlersAssemblyMarker).Assembly)
-            .AddMicroserviceHealthChecks(Configuration, IdentityServiceDbProperties.ConnectionStringName);
-
-        services.Configure<FakeSettings>(Configuration.GetSection("FakeSettings"));
-
-        AddIdentityServiceInfrastructures(services);
+            .AddServiceApplicationConfiguration(Configuration)
+            .AddServiceDatabaseConfiguration(Configuration);
 
         if (!WebHostEnvironment.IsProduction())
         {
-            SwaggerConfigurationHelper.Configure(services, "Identity Service API");
+            SwaggerConfigurationHelper.Configure(services, $"{Program.AppName} API");
         }
 
         var container = new ContainerBuilder();
@@ -51,7 +45,7 @@ public sealed class Startup
             app.UseSwagger();
             app.UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Identity Service API");
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", $"{Program.AppName} API");
             });
         }
 
@@ -73,11 +67,8 @@ public sealed class Startup
             else
             {
                 endpoints.MapControllers();
-                endpoints.MapGet("/", () => $"HHS Identity Service | {WebHostEnvironment.EnvironmentName} | v1.0.0");
+                endpoints.MapGet("/", () => $"HHS {Program.AppName} | {WebHostEnvironment.EnvironmentName} | v1.0.0");
             }
-
-            endpoints.MapHealthChecks("/hc", new HealthCheckOptions { Predicate = _ => true, ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse });
-            endpoints.MapHealthChecks("/liveness", new HealthCheckOptions { Predicate = r => r.Name.Contains("self") });
         });
 
         // Subscribe all event handlers
@@ -86,17 +77,5 @@ public sealed class Startup
         hostApplicationLifetime.ApplicationStopping.Register(OnShutdown);
     }
 
-    private void OnShutdown()
-    {
-        Console.WriteLine("Application stopping...");
-    }
-
-    private void AddIdentityServiceInfrastructures(IServiceCollection services)
-    {
-        var assemblyName = typeof(Program).Assembly.GetName().Name;
-
-        services.AddServiceApplicationConfiguration();
-
-        services.AddServiceDatabaseConfiguration(assemblyName, Configuration.GetConnectionString(IdentityServiceDbProperties.ConnectionStringName));
-    }
+    private static void OnShutdown() => Console.WriteLine("Stopping web host ({0})...", Program.AppName);
 }
