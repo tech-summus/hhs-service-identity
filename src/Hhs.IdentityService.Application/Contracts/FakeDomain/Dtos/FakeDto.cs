@@ -2,7 +2,7 @@ using Hhs.IdentityService.Domain.Enums;
 using HsnSoft.Base.Application.Dtos;
 using JetBrains.Annotations;
 
-namespace Hhs.IdentityService.Application.Contracts.FakeDomain;
+namespace Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos;
 
 public sealed class FakeDto : EntityDto<Guid>
 {

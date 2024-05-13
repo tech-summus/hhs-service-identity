@@ -1,22 +1,101 @@
 using System.Linq.Dynamic.Core;
 using Hhs.IdentityService.Domain.Enums;
-using Hhs.IdentityService.Domain.FakeDomain;
+using Hhs.IdentityService.Domain.FakeDomain.Consts;
 using Hhs.IdentityService.Domain.FakeDomain.Entities;
+using Hhs.IdentityService.Domain.FakeDomain.Exceptions;
 using Hhs.IdentityService.Domain.FakeDomain.Repositories;
-using Hhs.IdentityService.EntityFrameworkCore;
+using Hhs.IdentityService.EntityFrameworkCore.Context;
 using HsnSoft.Base.Domain.Repositories.EntityFrameworkCore;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hhs.IdentityService.FakeDomain;
+namespace Hhs.IdentityService.EntityFrameworkCore.Repositories;
 
-public sealed class EfCoreFakeRepository : EfCoreRepository<IdentityServiceDbContext, Fake, Guid>, IFakeManagerRepository
+public sealed class EfCoreFakeRepository : EfCoreGenericRepository<IdentityServiceDbContext, Fake, Guid>, IFakeRepository
 {
-    public EfCoreFakeRepository(IServiceProvider serviceProvider, IdentityServiceDbContext dbContext)
-        : base(serviceProvider, dbContext)
+    public EfCoreFakeRepository(IServiceProvider provider, IdentityServiceDbContext dbContext) : base(provider, dbContext)
     {
-        GetDbContext().ServiceProvider = serviceProvider;
-        DefaultPropertySelector = null;
+    }
+
+    public async Task<Fake> CreateAsync(
+        DateTime fakeDate,
+        [NotNull] string fakeCode,
+        FakeState fakeState,
+        CancellationToken cancellationToken = default)
+        => await CreateAsync(Guid.NewGuid(),
+            fakeDate,
+            fakeCode,
+            fakeState,
+            cancellationToken);
+
+    public async Task<Fake> CreateAsync(
+        Guid id,
+        DateTime fakeDate,
+        [NotNull] string fakeCode,
+        FakeState fakeState,
+        CancellationToken cancellationToken = default)
+    {
+        if (id == Guid.Empty) id = Guid.NewGuid();
+
+        // Create draft Fake
+        var draftFake = new Fake(
+            id: id,
+            fakeDate: fakeDate,
+            fakeCode: fakeCode,
+            fakeState: fakeState
+        );
+
+        //Domain Rules
+        // Rule01
+        // Rule02
+
+        return await InsertAsync(draftFake, cancellationToken);
+    }
+
+    public async Task<Fake> UpdateAsync(Guid id,
+        DateTime fakeDate,
+        [NotNull] string fakeCode,
+        FakeState fakeState,
+        CancellationToken cancellationToken = default)
+    {
+        var oldFake = await FindAsync(id, false, cancellationToken);
+        if (oldFake == null)
+        {
+            throw new FakeNotFoundException(id.ToString());
+        }
+
+        oldFake.SetFakeDate(fakeDate);
+        oldFake.SetFakeCode(fakeCode);
+        oldFake.FakeState = fakeState;
+
+        //Domain Rules
+        // Rule01
+        // Rule02
+
+        return await UpdateAsync(oldFake, cancellationToken);
+    }
+
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var fake = await FindAsync(id, false, cancellationToken);
+        if (fake == null)
+        {
+            throw new FakeNotFoundException(id.ToString());
+        }
+
+        //Domain Rule -> Fake Dependency Control for Delete
+        // Rule01
+
+        var guidGenerated = Guid.NewGuid().ToString("N").ToUpper();
+        var uniqueField = guidGenerated + "_" + fake.FakeCode;
+        if (uniqueField.Length > FakeConsts.FakeCodeMaxLength)
+        {
+            uniqueField = uniqueField[..FakeConsts.FakeCodeMaxLength];
+        }
+
+        fake.SetFakeCode(uniqueField);
+        fake.IsDeleted = true;
+        await UpdateAsync(fake, cancellationToken);
     }
 
     public async Task<List<Fake>> GetPagedListWithFiltersAsync(
@@ -31,8 +110,8 @@ public sealed class EfCoreFakeRepository : EfCoreRepository<IdentityServiceDbCon
     )
     {
         var queryable = includeDetails
-            ? await WithDetailsAsync(DefaultPropertySelector?.ToArray())
-            : await GetQueryableAsync();
+            ? WithDetails(DefaultPropertySelector?.ToArray())
+            : GetQueryable();
 
         var query = ApplyFilter(queryable, null,
             fakeDate, fakeCode, fakeState);
@@ -50,7 +129,7 @@ public sealed class EfCoreFakeRepository : EfCoreRepository<IdentityServiceDbCon
         CancellationToken cancellationToken = default
     )
     {
-        var query = ApplyFilter(await GetQueryableAsync(), null,
+        var query = ApplyFilter(GetQueryable(), null,
             fakeDate, fakeCode, fakeState);
 
         return await query.LongCountAsync(GetCancellationToken(cancellationToken));
@@ -66,8 +145,8 @@ public sealed class EfCoreFakeRepository : EfCoreRepository<IdentityServiceDbCon
     )
     {
         var queryable = includeDetails
-            ? await WithDetailsAsync(DefaultPropertySelector?.ToArray())
-            : await GetQueryableAsync();
+            ? WithDetails(DefaultPropertySelector?.ToArray())
+            : GetQueryable();
 
         var query = ApplyFilter(queryable, null,
             fakeDate, fakeCode, fakeState);
@@ -84,7 +163,7 @@ public sealed class EfCoreFakeRepository : EfCoreRepository<IdentityServiceDbCon
         CancellationToken cancellationToken = default
     )
     {
-        var query = ApplyFilter(await GetQueryableAsync(), searchText);
+        var query = ApplyFilter(GetQueryable(), searchText);
 
         return await query
             .OrderBy(string.IsNullOrWhiteSpace(sorting) ? FakeConsts.GetDefaultSorting(false) : sorting)

@@ -1,4 +1,3 @@
-using Hhs.IdentityService.Application.Contracts.FakeDomain;
 using Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos;
 using Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos.Filters;
 using Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos.Submits;
@@ -9,8 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hhs.IdentityService.Controllers;
 
-[ControllerName("Fake")]
-[Route("api/administration-service/v1/commercial/fakes")]
+[Route("api/identity-service/v1/commercial/fakes")]
 public sealed class FakeController : IdentityServiceController
 {
     private readonly IFakeAppService _fakeAppService;

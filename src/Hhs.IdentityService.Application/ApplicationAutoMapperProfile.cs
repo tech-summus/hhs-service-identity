@@ -1,12 +1,12 @@
 using AutoMapper;
-using Hhs.IdentityService.Application.Contracts.FakeDomain;
+using Hhs.IdentityService.Application.Contracts.FakeDomain.Dtos;
 using Hhs.IdentityService.Domain.FakeDomain.Entities;
 
 namespace Hhs.IdentityService.Application;
 
-public class IdentityServiceApplicationAutoMapperProfile : Profile
+public class ApplicationAutoMapperProfile : Profile
 {
-    public IdentityServiceApplicationAutoMapperProfile()
+    public ApplicationAutoMapperProfile()
     {
         CreateMap<Fake, FakeDto>()
             .ForMember(dest => dest.FakeCode, opt =>

@@ -5,13 +5,21 @@ using JetBrains.Annotations;
 
 namespace Hhs.IdentityService.Domain.FakeDomain.Repositories;
 
-public interface IFakeReadOnlyRepository : IReadOnlyRepository<Fake, Guid>
+public interface IFakeRepository : IReadOnlyGenericRepository<Fake, Guid>
 {
+    Task<Fake> CreateAsync(DateTime fakeDate, [NotNull] string fakeCode, FakeState fakeState, CancellationToken cancellationToken = default);
+
+    Task<Fake> CreateAsync(Guid id, DateTime fakeDate, [NotNull] string fakeCode, FakeState fakeState, CancellationToken cancellationToken = default);
+
+    Task<Fake> UpdateAsync(Guid id, DateTime fakeDate, [NotNull] string fakeCode, FakeState fakeState, CancellationToken cancellationToken = default);
+
+    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+
     Task<List<Fake>> GetPagedListWithFiltersAsync(
         DateTime? fakeDate = null,
         [CanBeNull] string fakeCode = null,
         FakeState? fakeState = null,
-        [CanBeNull] string sorting = null,
+        string sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
         bool includeDetails = false,
@@ -29,14 +37,14 @@ public interface IFakeReadOnlyRepository : IReadOnlyRepository<Fake, Guid>
         DateTime? fakeDate = null,
         [CanBeNull] string fakeCode = null,
         FakeState? fakeState = null,
-        [CanBeNull] string sorting = null,
+        string sorting = null,
         bool includeDetails = false,
         CancellationToken cancellationToken = default
     );
 
     Task<List<Fake>> GetSearchListAsync(
-        [CanBeNull] string searchText = null,
-        [CanBeNull] string sorting = null,
+        string searchText = null,
+        string sorting = null,
         int maxResultCount = int.MaxValue,
         CancellationToken cancellationToken = default
     );

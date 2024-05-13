@@ -1,3 +1,4 @@
+using HsnSoft.Base.Logging;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hhs.IdentityService.Controllers.Base;
@@ -5,9 +6,9 @@ namespace Hhs.IdentityService.Controllers.Base;
 public sealed class HomeController : Controller
 {
     private readonly IWebHostEnvironment _environment;
-    private readonly ILogger _logger;
+    private readonly IBaseLogger _logger;
 
-    public HomeController(IWebHostEnvironment environment, ILogger<HomeController> logger)
+    public HomeController(IWebHostEnvironment environment, IBaseLogger logger)
     {
         _environment = environment;
         _logger = logger;

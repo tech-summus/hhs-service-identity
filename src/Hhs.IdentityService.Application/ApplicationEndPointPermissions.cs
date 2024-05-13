@@ -1,14 +1,14 @@
 using HsnSoft.Base.Reflection;
 
-namespace Hhs.IdentityService.Application.Contracts;
+namespace Hhs.IdentityService.Application;
 
-public static class IdentityServicePermissions
+public static class ApplicationEndPointPermissions
 {
     private const string GroupName = "IdentityService";
 
     public static string[] GetAll()
     {
-        return ReflectionHelper.GetPublicConstantsRecursively(typeof(IdentityServicePermissions));
+        return ReflectionHelper.GetPublicConstantsRecursively(typeof(ApplicationEndPointPermissions));
     }
 
     public static class Fakes

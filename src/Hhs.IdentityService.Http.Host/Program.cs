@@ -1,4 +1,4 @@
-using Hhs.Shared.Hosting;
+using HsnSoft.Base.AspNetCore.Serilog;
 using Microsoft.AspNetCore;
 using Serilog;
 
@@ -7,11 +7,11 @@ namespace Hhs.IdentityService;
 public static class Program
 {
     private static readonly string Namespace = typeof(Startup).Namespace;
-    private static readonly string AppName = Namespace?[(Namespace.IndexOf('.') + 1)..];
+    public static readonly string AppName = Namespace?[(Namespace.IndexOf('.') + 1)..];
 
     public static async Task<int> Main(string[] args)
     {
-        Log.Logger = SerilogConfigurationHelper.Configure(AppName);
+        Log.Logger = SerilogConfigurationHelper.ConfigureConsoleLogger();
 
         try
         {

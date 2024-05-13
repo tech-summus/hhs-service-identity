@@ -1,4 +1,4 @@
-namespace Hhs.IdentityService.Domain.FakeDomain;
+namespace Hhs.IdentityService.Domain.FakeDomain.Consts;
 
 public static class FakeConsts
 {

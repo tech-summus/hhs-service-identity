@@ -1,14 +1,13 @@
-using Hhs.IdentityService.Domain;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Configuration;
 
-namespace Hhs.IdentityService.Migrations;
+namespace Hhs.IdentityService.EntityFrameworkCore.Factory;
 
 internal static class DbContextFactoryHelper
 {
     [CanBeNull]
     internal static string GetConnectionStringFromConfiguration()
-        => BuildConfiguration().GetConnectionString(IdentityServiceDbProperties.ConnectionStringName);
+        => BuildConfiguration().GetConnectionString(EfCoreDbProperties.ConnectionStringName);
         // => "Host=hhsahin.com;Port=35432;Database=Hhs_IdentityService;User ID=postgres;Password=postgres;Pooling=true;Connection Lifetime=0;";
 
     private static IConfigurationRoot BuildConfiguration()

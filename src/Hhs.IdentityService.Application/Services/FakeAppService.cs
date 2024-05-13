@@ -7,34 +7,28 @@ using Hhs.IdentityService.Application.Contracts.FakeDomain.Interfaces;
 using Hhs.IdentityService.Domain.Enums;
 using Hhs.IdentityService.Domain.FakeDomain.Entities;
 using Hhs.IdentityService.Domain.FakeDomain.Repositories;
-using Hhs.IdentityService.Domain.FakeDomain.Services;
 using HsnSoft.Base;
 using HsnSoft.Base.Application.Dtos;
-using Microsoft.Extensions.Logging;
+using HsnSoft.Base.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Hhs.IdentityService.Application.Services;
 
-public sealed class FakeAppService : IdentityServiceAppService, IFakeAppService
+public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
 {
-    private readonly ILogger<FakeAppService> _logger;
-    private readonly FakeSettings _settings;
-    private readonly IFakeReadOnlyRepository _fakeRepository;
-    private readonly FakeManager _fakeManager;
+    private readonly IBaseLogger _logger;
+    private readonly IFakeRepository _fakeRepository;
 
     public FakeAppService(IServiceProvider provider,
-        ILogger<FakeAppService> logger,
         IOptions<FakeSettings> settings,
-        IFakeReadOnlyRepository fakeRepository,
-        FakeManager fakeManager
+        IFakeRepository fakeRepository
     ) : base(provider)
     {
-        _logger = logger;
-        _settings = settings.Value;
-        _fakeManager = fakeManager;
+        _logger = provider.GetRequiredService<IBaseLogger>();
         _fakeRepository = fakeRepository;
 
-        _logger.LogTrace("FakeSettings: {@FakeSettings}", _settings);
+        _logger.LogDebug("FakeSettings: {@FakeSettings}", settings.Value);
     }
 
     public async Task<FakeDto> GetAsync(Guid id)
@@ -116,7 +110,7 @@ public sealed class FakeAppService : IdentityServiceAppService, IFakeAppService
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        var placedFake = await _fakeManager.CreateAsync(
+        var placedFake = await _fakeRepository.CreateAsync(
             fakeDate: input.FakeDate ?? DateTime.Now,
             fakeCode: input.FakeCode ?? string.Empty,
             fakeState: input.FakeState ?? FakeState.WaitForApprove
@@ -132,7 +126,7 @@ public sealed class FakeAppService : IdentityServiceAppService, IFakeAppService
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        var fake = await _fakeManager.UpdateAsync(
+        var fake = await _fakeRepository.UpdateAsync(
             id: input.Id,
             fakeDate: input.FakeDate ?? DateTime.Now,
             fakeCode: input.FakeCode ?? string.Empty,
@@ -151,7 +145,7 @@ public sealed class FakeAppService : IdentityServiceAppService, IFakeAppService
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        await _fakeManager.DeleteAsync(id);
+        await _fakeRepository.DeleteAsync(id);
 
         //INTEGRATION EVENT TRIGGER
         //

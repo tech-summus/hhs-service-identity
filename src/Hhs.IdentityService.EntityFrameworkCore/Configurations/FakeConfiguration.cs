@@ -1,20 +1,19 @@
-using Hhs.IdentityService.Domain;
-using Hhs.IdentityService.Domain.FakeDomain;
+using Hhs.IdentityService.Domain.FakeDomain.Consts;
 using Hhs.IdentityService.Domain.FakeDomain.Entities;
 using HsnSoft.Base;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hhs.IdentityService.EntityFrameworkCore;
+namespace Hhs.IdentityService.EntityFrameworkCore.Configurations;
 
-public static class IdentityServiceDbContextModelCreatingExtensions
+public static class FakeConfiguration
 {
-    public static void ConfigureIdentityService(this ModelBuilder builder)
+    public static void ConfigureFakeEntity(this ModelBuilder builder)
     {
         Check.NotNull(builder, nameof(builder));
 
         builder.Entity<Fake>(b =>
         {
-            b.ToTable(IdentityServiceDbProperties.DbTablePrefix + FakeConsts.TableName, IdentityServiceDbProperties.DbSchema);
+            b.ToTable(EfCoreDbProperties.DbTablePrefix + FakeConsts.TableName, EfCoreDbProperties.DbSchema);
             b.HasKey(ci => ci.Id);
 
             b.Property(x => x.FakeDate).HasColumnName(nameof(Fake.FakeDate)).IsRequired();

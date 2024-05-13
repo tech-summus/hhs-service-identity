@@ -7,9 +7,9 @@ namespace Hhs.IdentityService.Domain.FakeDomain.Exceptions;
 internal sealed class FakeNotFoundException : BusinessException
 {
     public FakeNotFoundException(string referenceCode)
-        : base(errorMessage: IdentityServiceErrorCodes.FakeNotFound)
+        : base(errorMessage: DomainErrorCodes.FakeNotFound)
     {
-        ErrorCode = IdentityServiceErrorCodes.FakeNotFound.Split(':').LastOrDefault();
+        ErrorCode = DomainErrorCodes.FakeNotFound.Split(':').LastOrDefault();
         WithData(ValidationResourceKeys.ErrorReference, referenceCode);
     }
 }

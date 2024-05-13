@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Hhs.IdentityService.Domain.Enums;
-using Hhs.IdentityService.Domain.FakeDomain;
+using Hhs.IdentityService.Domain.FakeDomain.Consts;
 using HsnSoft.Base;
 using HsnSoft.Base.Validation.Localization;
 using JetBrains.Annotations;

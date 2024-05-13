@@ -1,8 +1,8 @@
-using Hhs.IdentityService.EntityFrameworkCore;
+using Hhs.IdentityService.EntityFrameworkCore.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Hhs.IdentityService.Migrations;
+namespace Hhs.IdentityService.EntityFrameworkCore.Factory;
 
 internal sealed class IdentityServiceDbContextFactory : IDesignTimeDbContextFactory<IdentityServiceDbContext>
 {
@@ -12,8 +12,9 @@ internal sealed class IdentityServiceDbContextFactory : IDesignTimeDbContextFact
             .UseNpgsql(DbContextFactoryHelper.GetConnectionStringFromConfiguration(), b =>
             {
                 b.MigrationsHistoryTable("__EFMigrationsHistory");
+                b.MigrationsAssembly(typeof(IdentityServiceDbContext).Assembly.GetName().Name);
             });
 
-        return new IdentityServiceDbContext(builder.Options);
+        return new IdentityServiceDbContext(null, builder.Options);
     }
 }
