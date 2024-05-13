@@ -9,14 +9,15 @@ using Hhs.IdentityService.Domain.FakeDomain.Entities;
 using Hhs.IdentityService.Domain.FakeDomain.Repositories;
 using HsnSoft.Base;
 using HsnSoft.Base.Application.Dtos;
-using Microsoft.Extensions.Logging;
+using HsnSoft.Base.Logging;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Hhs.IdentityService.Application.Services;
 
 public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
 {
-    private readonly ILogger _logger;
+    private readonly IBaseLogger _logger;
     private readonly IFakeRepository _fakeRepository;
 
     public FakeAppService(IServiceProvider provider,
@@ -24,10 +25,10 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
         IFakeRepository fakeRepository
     ) : base(provider)
     {
-        _logger = LoggerFactory.CreateLogger<FakeAppService>();
+        _logger = provider.GetRequiredService<IBaseLogger>();
         _fakeRepository = fakeRepository;
 
-        _logger.LogTrace("FakeSettings: {@FakeSettings}", settings.Value);
+        _logger.LogDebug("FakeSettings: {@FakeSettings}", settings.Value);
     }
 
     public async Task<FakeDto> GetAsync(Guid id)

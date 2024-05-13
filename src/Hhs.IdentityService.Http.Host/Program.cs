@@ -1,4 +1,4 @@
-using Hhs.Shared.Hosting;
+using HsnSoft.Base.AspNetCore.Serilog;
 using Microsoft.AspNetCore;
 using Serilog;
 
@@ -11,7 +11,7 @@ public static class Program
 
     public static async Task<int> Main(string[] args)
     {
-        Log.Logger = SerilogConfigurationHelper.Configure(AppName);
+        Log.Logger = SerilogConfigurationHelper.ConfigureConsoleLogger();
 
         try
         {

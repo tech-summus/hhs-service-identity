@@ -1,8 +1,8 @@
 using Hhs.IdentityService.EntityFrameworkCore.Context;
 using HsnSoft.Base.Data;
+using HsnSoft.Base.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 
 namespace Hhs.IdentityService.EntityFrameworkCore;
 
@@ -18,8 +18,7 @@ public sealed class EfCoreSeederService : IBasicDataSeeder
     public async Task EnsureSeedDataAsync(CancellationToken cancellationToken)
     {
         using var scope = _serviceScopeFactory.CreateScope();
-        var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
-        var logger = loggerFactory.CreateLogger("EfCoreSeederService");
+        var logger = scope.ServiceProvider.GetRequiredService<IBaseLogger>();
         logger.LogInformation("SEED OPERATION | START");
 
         try
