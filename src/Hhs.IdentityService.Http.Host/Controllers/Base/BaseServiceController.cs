@@ -6,9 +6,9 @@ namespace Hhs.IdentityService.Controllers.Base;
 [Produces("application/json")]
 [Area("identity-service")]
 [ApiController]
-public abstract class IdentityServiceController : ApiControllerBase
+public abstract class BaseServiceController : ApiControllerBase
 {
-    protected IdentityServiceController(IServiceProvider provider)
+    protected BaseServiceController(IServiceProvider provider)
     {
         ServiceProvider = provider;
     }

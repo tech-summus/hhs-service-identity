@@ -7,13 +7,13 @@ namespace Hhs.IdentityService.Domain.FakeDomain.Repositories;
 
 public interface IFakeRepository : IReadOnlyGenericRepository<Fake, Guid>
 {
-    Task<Fake> CreateAsync(DateTime fakeDate, [NotNull] string fakeCode, FakeState fakeState, CancellationToken cancellationToken = default);
+    Task<Fake> CreateAsync(DateTime fakeDate, [NotNull] string fakeCode, FakeState fakeState);
 
-    Task<Fake> CreateAsync(Guid id, DateTime fakeDate, [NotNull] string fakeCode, FakeState fakeState, CancellationToken cancellationToken = default);
+    Task<Fake> CreateAsync(Guid id, DateTime fakeDate, [NotNull] string fakeCode, FakeState fakeState);
 
-    Task<Fake> UpdateAsync(Guid id, DateTime fakeDate, [NotNull] string fakeCode, FakeState fakeState, CancellationToken cancellationToken = default);
+    Task<Fake> UpdateAsync(Guid id, DateTime fakeDate, [NotNull] string fakeCode, FakeState fakeState);
 
-    Task DeleteAsync(Guid id, CancellationToken cancellationToken = default);
+    Task RemoveAsync(Guid id);
 
     Task<List<Fake>> GetPagedListWithFiltersAsync(
         DateTime? fakeDate = null,

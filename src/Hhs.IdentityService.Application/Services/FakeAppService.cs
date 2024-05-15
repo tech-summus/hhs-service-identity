@@ -31,14 +31,14 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
         _logger.LogDebug("FakeSettings: {@FakeSettings}", settings.Value);
     }
 
-    public async Task<FakeDto> GetAsync(Guid id)
+    public async Task<FakeDto> GetAsync(Guid id, CancellationToken cancellationToken = default)
     {
         if (id == Guid.Empty)
         {
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        var item = await _fakeRepository.FindAsync(id);
+        var item = await _fakeRepository.FindAsync(id, cancellationToken: cancellationToken);
         if (item == null)
         {
             throw new BaseHttpException((int)HttpStatusCode.NotFound);
@@ -47,17 +47,17 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
         return Mapper.Map<Fake, FakeDto>(item);
     }
 
-    public async Task<PagedResultDto<FakeDto>> GetPagedListAsync(GetFakesPaged pagedInput)
+    public async Task<PagedResultDto<FakeDto>> GetPagedListAsync(GetFakesPaged pagedInput, CancellationToken cancellationToken = default)
     {
         if (pagedInput == null)
         {
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        var totalCount = await _fakeRepository.GetCountWithFiltersAsync(null, pagedInput.FakeCode, pagedInput.FakeState);
+        var totalCount = await _fakeRepository.GetCountWithFiltersAsync(null, pagedInput.FakeCode, pagedInput.FakeState, cancellationToken);
 
         var items = await _fakeRepository.GetPagedListWithFiltersAsync(null, pagedInput.FakeCode, pagedInput.FakeState,
-            pagedInput.Sorting, pagedInput.MaxResultCount, pagedInput.SkipCount, true);
+            pagedInput.Sorting, pagedInput.MaxResultCount, pagedInput.SkipCount, true, cancellationToken);
 
         if (items == null)
         {
@@ -67,7 +67,7 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
         return new PagedResultDto<FakeDto> { TotalCount = totalCount, Items = Mapper.Map<List<Fake>, List<FakeDto>>(items) };
     }
 
-    public async Task<List<FakeDto>> GetFilterListAsync(GetFakesFilter filterInput)
+    public async Task<List<FakeDto>> GetFilterListAsync(GetFakesFilter filterInput, CancellationToken cancellationToken = default)
     {
         if (filterInput == null)
         {
@@ -75,7 +75,7 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
         }
 
         var items = await _fakeRepository.GetFilterListAsync(null, filterInput.FakeCode, filterInput.FakeState,
-            filterInput.Sorting, true);
+            filterInput.Sorting, true, cancellationToken);
 
         if (items == null)
         {
@@ -85,7 +85,7 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
         return Mapper.Map<List<Fake>, List<FakeDto>>(items);
     }
 
-    public async Task<List<FakeSearchDto>> GetSearchListAsync(GetFakesSearch searchInput)
+    public async Task<List<FakeSearchDto>> GetSearchListAsync(GetFakesSearch searchInput, CancellationToken cancellationToken = default)
     {
         if (searchInput == null)
         {
@@ -93,7 +93,7 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
         }
 
         var items = await _fakeRepository.GetSearchListAsync(searchInput.SearchText,
-            searchInput.Sorting, searchInput.MaxResultCount);
+            searchInput.Sorting, searchInput.MaxResultCount, cancellationToken);
 
         if (items == null)
         {
@@ -145,7 +145,7 @@ public sealed class FakeAppService : ApplicationServiceBase, IFakeAppService
             throw new BaseHttpException((int)HttpStatusCode.BadRequest);
         }
 
-        await _fakeRepository.DeleteAsync(id);
+        await _fakeRepository.RemoveAsync(id);
 
         //INTEGRATION EVENT TRIGGER
         //
