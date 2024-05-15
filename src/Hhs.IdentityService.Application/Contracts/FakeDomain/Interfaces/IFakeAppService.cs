@@ -8,11 +8,11 @@ namespace Hhs.IdentityService.Application.Contracts.FakeDomain.Interfaces;
 
 public interface IFakeAppService: IEventApplicationService
 {
-    Task<FakeDto> GetAsync(Guid id);
+    Task<FakeDto> GetAsync(Guid id, CancellationToken cancellationToken = default);
 
-    Task<PagedResultDto<FakeDto>> GetPagedListAsync(GetFakesPaged pagedInput);
-    Task<List<FakeDto>> GetFilterListAsync(GetFakesFilter filterInput);
-    Task<List<FakeSearchDto>> GetSearchListAsync(GetFakesSearch searchInput);
+    Task<PagedResultDto<FakeDto>> GetPagedListAsync(GetFakesPaged pagedInput, CancellationToken cancellationToken = default);
+    Task<List<FakeDto>> GetFilterListAsync(GetFakesFilter filterInput, CancellationToken cancellationToken = default);
+    Task<List<FakeSearchDto>> GetSearchListAsync(GetFakesSearch searchInput, CancellationToken cancellationToken = default);
 
     Task<FakeDto> CreateAsync(FakeCreateDto input);
 
