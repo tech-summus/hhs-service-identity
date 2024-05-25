@@ -11,12 +11,12 @@ public static class Program
 
     public static async Task<int> Main(string[] args)
     {
-        Log.Logger = SerilogConfigurationHelper.ConfigureConsoleLogger();
+        Log.Logger = SerilogConfigurationHelper.ConfigureConsoleLogger(GetConfiguration());
 
         try
         {
             Log.Information("Configuring web host ({ApplicationContext})...", AppName);
-            var host = CreateHostBuilder(GetConfiguration(), args);
+            var host = CreateHostBuilder(args);
 
             using (var scope = host.Services.CreateScope())
             {
@@ -38,7 +38,7 @@ public static class Program
         }
     }
 
-    private static IWebHost CreateHostBuilder(IConfiguration configuration, string[] args) =>
+    private static IWebHost CreateHostBuilder(string[] args) =>
         WebHost.CreateDefaultBuilder(args)
             .CaptureStartupErrors(false)
             .ConfigureKestrel(options =>
@@ -46,7 +46,7 @@ public static class Program
                 options.Limits.MaxRequestBufferSize = long.MaxValue;
                 options.Limits.MaxRequestBodySize = long.MaxValue;
             })
-            .ConfigureAppConfiguration(x => x.AddConfiguration(configuration))
+            .ConfigureAppConfiguration(x => x.AddConfiguration(GetConfiguration()))
             .UseStartup<Startup>()
             .UseContentRoot(Directory.GetCurrentDirectory())
             .ConfigureLogging(logging =>

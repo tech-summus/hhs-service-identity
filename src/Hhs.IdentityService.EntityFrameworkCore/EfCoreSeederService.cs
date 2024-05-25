@@ -19,35 +19,37 @@ public sealed class EfCoreSeederService : IBasicDataSeeder
     {
         using var scope = _serviceScopeFactory.CreateScope();
         var logger = scope.ServiceProvider.GetRequiredService<IBaseLogger>();
-        logger.LogInformation("SEED OPERATION | START");
+        logger.LogDebug("EfCoreSeeder | START");
 
+        var isReadyDatabase = false;
+        var dbContext = scope.ServiceProvider.GetRequiredService<IdentityServiceDbContext>();
         try
         {
-            var dbContext = scope.ServiceProvider.GetRequiredService<IdentityServiceDbContext>();
-
             if (dbContext.Database.CanConnectAsync(cancellationToken).GetAwaiter().GetResult())
             {
                 if ((await dbContext.Database.GetPendingMigrationsAsync(cancellationToken: cancellationToken)).Any())
                 {
                     // apply pending migrations
                     await dbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
-                    logger.LogInformation("SEED OPERATION | PENDING MIGRATIONS SUCCESSFULLY APPLIED");
+                    logger.LogDebug("EfCoreSeeder | PENDING MIGRATIONS SUCCESSFULLY APPLIED");
                 }
                 else
                 {
-                    logger.LogInformation("SEED OPERATION | EVERYTHING IS UP TO DATE");
+                    logger.LogDebug("EfCoreSeeder | EVERYTHING IS UP TO DATE");
                 }
             }
             else
             {
                 // first creation
                 await dbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
-                logger.LogInformation("SEED OPERATION | FIRST INITIALIZE SUCCESSFULLY COMPLETED");
+                logger.LogDebug("EfCoreSeeder | INITIALIZE SUCCESSFULLY COMPLETED");
             }
+
+            isReadyDatabase = true;
         }
         catch (Exception e)
         {
-            logger.LogInformation("SEED OPERATION | FAIL: {Error}", e.Message);
+            logger.LogError("EfCoreSeeder | FAIL: {Error}", e.Message);
         }
     }
 }

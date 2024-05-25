@@ -457,3 +457,6 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 
 logs/
+
+# SonarQube
+.sonarqube/

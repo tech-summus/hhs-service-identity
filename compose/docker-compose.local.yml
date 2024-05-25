@@ -14,9 +14,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=docker
     networks:
-      - hhs-network
+      - infra-network
 
 networks:
-  hhs-network:
-    name: hhs.infrastructure-network
+  infra-network:
+    name: local.infrastructure-network
     external: true
