@@ -12,7 +12,7 @@ services:
     ports:
       - "7410:80"
     environment:
-      - ASPNETCORE_ENVIRONMENT=docker
+      - ASPNETCORE_ENVIRONMENT=production
     networks:
       - infra-network
 
