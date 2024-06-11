@@ -4,7 +4,7 @@ EXPOSE 80
 
 ENV DOTNET_EnableDiagnostics=0 \
 ASPNETCORE_URLS='http://+;' \
-ASPNETCORE_ENVIRONMENT='Production'
+ASPNETCORE_ENVIRONMENT='docker'
 
 USER root
 
