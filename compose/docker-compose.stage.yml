@@ -12,7 +12,7 @@ services:
     ports:
       - "7410:80"
     environment:
-      - ASPNETCORE_ENVIRONMENT=development
+      - ASPNETCORE_ENVIRONMENT=stage
     networks:
       - infra-network
 

@@ -1,8 +1,8 @@
 docker network create -d bridge local.infrastructure-network
 
-docker-compose -f compose/docker-compose.dev.yml -p hhs-service-identity-compose build
+docker-compose -f compose/docker-compose.yml -p hhs-service-identity-compose build
 
-docker-compose -f compose/docker-compose.dev.yml -p hhs-service-identity-compose up -d
+docker-compose -f compose/docker-compose.yml -p hhs-service-identity-compose up -d
 docker-compose -p hhs-service-identity-compose logs --follow
 
-docker-compose -f compose/docker-compose.dev.yml -p hhs-service-identity-compose down
+docker-compose -f compose/docker-compose.yml -p hhs-service-identity-compose down
