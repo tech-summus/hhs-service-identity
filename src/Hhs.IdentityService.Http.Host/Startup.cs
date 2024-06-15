@@ -27,7 +27,7 @@ public sealed class Startup
             .AddServiceApplicationConfiguration(Configuration)
             .AddServiceDatabaseConfiguration(Configuration);
 
-        if (!WebHostEnvironment.IsProduction())
+        if (!WebHostEnvironment.IsHhsProduction())
         {
             SwaggerConfigurationHelper.Configure(services, $"{Program.AppName} API");
         }
@@ -40,7 +40,7 @@ public sealed class Startup
 
     public void Configure(IApplicationBuilder app, IHostApplicationLifetime hostApplicationLifetime)
     {
-        if (!WebHostEnvironment.IsProduction())
+        if (!WebHostEnvironment.IsHhsProduction())
         {
             app.UseSwagger();
             app.UseSwaggerUI(options =>
@@ -60,7 +60,7 @@ public sealed class Startup
 
         app.UseEndpoints(endpoints =>
         {
-            if (!WebHostEnvironment.IsProduction())
+            if (!WebHostEnvironment.IsHhsProduction())
             {
                 endpoints.MapDefaultControllerRoute();
             }
