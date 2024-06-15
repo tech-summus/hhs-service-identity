@@ -1,3 +1,4 @@
+using Hhs.Shared.Hosting;
 using HsnSoft.Base.Logging;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ public sealed class HomeController : Controller
 
     public IActionResult Index()
     {
-        if (!_environment.IsProduction())
+        if (!_environment.IsHhsProduction())
         {
             // only show in development
             return Redirect("/swagger");
