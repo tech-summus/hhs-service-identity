@@ -27,6 +27,8 @@ public sealed class Startup
     {
         services.ConfigureMicroserviceHost()
             .AddAdvancedController(Configuration, typeof(Startup))
+            .AddJwtServerAuthentication(Configuration, WebHostEnvironment, "audience-service-identity")
+            .AddAuthorization()
             .AddMicroserviceEventBus(Configuration, typeof(EventHandlersAssemblyMarker).Assembly)
             .AddServiceApplicationConfiguration(Configuration)
             .AddServiceDatabaseConfiguration(Configuration);
@@ -48,7 +50,9 @@ public sealed class Startup
 
         if (!WebHostEnvironment.IsHhsProduction())
         {
-            SwaggerConfigurationHelper.Configure(services, $"{Program.AppName} API");
+            SwaggerConfigurationHelper.ConfigureWithBearer(services,
+                "Please enter a valid token. Token audiences contains audience-service-identity",
+                $"{Program.AppName} API");
         }
 
         var container = new ContainerBuilder();
@@ -75,6 +79,7 @@ public sealed class Startup
 
         app.UseRouting();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
