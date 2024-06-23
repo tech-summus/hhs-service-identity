@@ -22,25 +22,38 @@ public sealed class EfCoreSeederService : IBasicDataSeeder
         logger.LogDebug("EfCoreSeeder | START");
 
         var isReadyDatabase = false;
+        var appDbContext = scope.ServiceProvider.GetRequiredService<IdentityAppDbContext>();
         var dbContext = scope.ServiceProvider.GetRequiredService<IdentityServiceDbContext>();
         try
         {
-            if (dbContext.Database.CanConnectAsync(cancellationToken).GetAwaiter().GetResult())
+            if (appDbContext.Database.CanConnectAsync(cancellationToken).GetAwaiter().GetResult())
             {
+                if ((await appDbContext.Database.GetPendingMigrationsAsync(cancellationToken: cancellationToken)).Any())
+                {
+                    // apply pending migrations
+                    await appDbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
+                    logger.LogDebug("EfCoreSeeder | PENDING MIGRATIONS SUCCESSFULLY APPLIED (APP)");
+                }
+                else
+                {
+                    logger.LogDebug("EfCoreSeeder | EVERYTHING IS UP TO DATE (APP)");
+                }
+
                 if ((await dbContext.Database.GetPendingMigrationsAsync(cancellationToken: cancellationToken)).Any())
                 {
                     // apply pending migrations
                     await dbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
-                    logger.LogDebug("EfCoreSeeder | PENDING MIGRATIONS SUCCESSFULLY APPLIED");
+                    logger.LogDebug("EfCoreSeeder | PENDING MIGRATIONS SUCCESSFULLY APPLIED (SERVICE)");
                 }
                 else
                 {
-                    logger.LogDebug("EfCoreSeeder | EVERYTHING IS UP TO DATE");
+                    logger.LogDebug("EfCoreSeeder | EVERYTHING IS UP TO DATE (SERVICE)");
                 }
             }
             else
             {
                 // first creation
+                await appDbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
                 await dbContext.Database.MigrateAsync(cancellationToken: cancellationToken);
                 logger.LogDebug("EfCoreSeeder | INITIALIZE SUCCESSFULLY COMPLETED");
             }

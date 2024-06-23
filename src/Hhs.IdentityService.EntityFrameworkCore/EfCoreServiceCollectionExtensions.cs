@@ -1,3 +1,5 @@
+using Hhs.IdentityService.Domain.AppRoleDomain.Repositories;
+using Hhs.IdentityService.Domain.AppUserDomain.Repositories;
 using Hhs.IdentityService.Domain.FakeDomain.Repositories;
 using Hhs.IdentityService.EntityFrameworkCore.Context;
 using Hhs.IdentityService.EntityFrameworkCore.Repositories;
@@ -19,21 +21,39 @@ public static class EfCoreServiceCollectionExtensions
         // override DefaultBasicDataSeeder
         services.AddTransient<IBasicDataSeeder, EfCoreSeederService>();
 
-        services.AddDbContext<IdentityServiceDbContext>(options =>
+        services.AddDbContext<IdentityAppDbContext>(options =>
+        {
+            options.UseNpgsql(configuration.GetConnectionString(EfCoreDbProperties.ConnectionStringName), sqlOptions =>
             {
-                options.UseNpgsql(configuration.GetConnectionString(EfCoreDbProperties.ConnectionStringName), sqlOptions =>
-                {
-                    sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory");
-                    sqlOptions.MigrationsAssembly(typeof(IdentityServiceDbContext).Assembly.GetName().Name);
-                    sqlOptions.EnableRetryOnFailure(10, TimeSpan.FromSeconds(6), null);
-                    sqlOptions.CommandTimeout(30000);
-                    sqlOptions.MaxBatchSize(100);
-                });
-                // options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
-                options.EnableSensitiveDataLogging(false);
-            }
-            , contextLifetime: ServiceLifetime.Scoped   // Must be Scoped => Cannot consume any scoped service and CurrentUser object creation on constructor
-            , optionsLifetime: ServiceLifetime.Singleton
+                sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory");
+                sqlOptions.MigrationsAssembly(typeof(IdentityAppDbContext).Assembly.GetName().Name);
+                sqlOptions.EnableRetryOnFailure(10, TimeSpan.FromSeconds(6), errorCodesToAdd: null);
+                sqlOptions.CommandTimeout(30000);
+                sqlOptions.MaxBatchSize(100);
+            });
+            // options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
+            options.EnableSensitiveDataLogging(false);
+        });
+
+        // Must be Scoped => Cannot consume any scoped service and CurrentUser object creation on constructor
+        services.AddTransient<IAppUserRepository, AppUserRepository>();
+        services.AddTransient<IAppRoleRepository, AppRoleRepository>();
+
+        services.AddDbContext<IdentityServiceDbContext>(options =>
+        {
+            options.UseNpgsql(configuration.GetConnectionString(EfCoreDbProperties.ConnectionStringName), sqlOptions =>
+            {
+                sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory");
+                sqlOptions.MigrationsAssembly(typeof(IdentityServiceDbContext).Assembly.GetName().Name);
+                sqlOptions.EnableRetryOnFailure(10, TimeSpan.FromSeconds(6), errorCodesToAdd: null);
+                sqlOptions.CommandTimeout(30000);
+                sqlOptions.MaxBatchSize(100);
+            });
+            // options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
+            options.EnableSensitiveDataLogging(false);
+        }
+        , contextLifetime: ServiceLifetime.Scoped // Must be Scoped => Cannot consume any scoped service and CurrentUser object creation on constructor
+        , optionsLifetime: ServiceLifetime.Singleton
         );
 
         // Must be Scoped => Cannot consume any scoped service and CurrentUser object creation on constructor
