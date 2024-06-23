@@ -26,12 +26,19 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Update="public_key.xml">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
         <Content Include="..\..\.dockerignore">
             <Link>.dockerignore</Link>
         </Content>
     </ItemGroup>
 
     <ItemGroup>
+        <Compile Remove="Logs\**" />
         <Content Remove="Logs\**" />
         <EmbeddedResource Remove="Logs\**" />
         <None Remove="Logs\**" />
