@@ -3,20 +3,17 @@ using System;
 using Hhs.IdentityService.EntityFrameworkCore.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Hhs.IdentityService.EntityFrameworkCore.Migrations
+namespace Hhs.IdentityService.EntityFrameworkCore.Migrations.Service
 {
     [DbContext(typeof(IdentityServiceDbContext))]
-    [Migration("20240509223458_InitialCreate")]
-    partial class InitialCreate
+    partial class IdentityServiceDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

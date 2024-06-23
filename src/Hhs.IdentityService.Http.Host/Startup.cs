@@ -1,10 +1,14 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Hhs.IdentityService.Application;
+using Hhs.IdentityService.Domain.AppRoleDomain.Entities;
+using Hhs.IdentityService.Domain.AppUserDomain.Entities;
 using Hhs.IdentityService.EntityFrameworkCore;
+using Hhs.IdentityService.EntityFrameworkCore.Context;
 using Hhs.Shared.Hosting;
 using Hhs.Shared.Hosting.Microservices;
 using Hhs.Shared.Hosting.Microservices.Middlewares;
+using Microsoft.AspNetCore.Identity;
 
 namespace Hhs.IdentityService;
 
@@ -23,13 +27,32 @@ public sealed class Startup
     {
         services.ConfigureMicroserviceHost()
             .AddAdvancedController(Configuration, typeof(Startup))
+            .AddJwtServerAuthentication(Configuration, WebHostEnvironment, "audience-service-identity")
+            .AddAuthorization()
             .AddMicroserviceEventBus(Configuration, typeof(EventHandlersAssemblyMarker).Assembly)
             .AddServiceApplicationConfiguration(Configuration)
             .AddServiceDatabaseConfiguration(Configuration);
 
+        services.AddIdentity<AppUser, AppRole>(options =>
+            {
+                options.SignIn.RequireConfirmedAccount = false;
+                options.User.RequireUniqueEmail = true;
+                options.Password.RequiredLength = 6;
+                options.Password.RequiredUniqueChars = 0;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.User.AllowedUserNameCharacters = "abcçdefghiıjklmnoöpqrsştuüvwxyzABCÇDEFGHIİJKLMNOÖPQRSŞTUÜVWXYZ0123456789-._@+'#!/^%{}*";
+            })
+            .AddEntityFrameworkStores<IdentityAppDbContext>()
+            .AddDefaultTokenProviders();
+
         if (!WebHostEnvironment.IsHhsProduction())
         {
-            SwaggerConfigurationHelper.Configure(services, $"{Program.AppName} API");
+            SwaggerConfigurationHelper.ConfigureWithBearer(services,
+                "Please enter a valid token. Token audiences contains audience-service-identity",
+                $"{Program.AppName} API");
         }
 
         var container = new ContainerBuilder();
@@ -56,6 +79,7 @@ public sealed class Startup
 
         app.UseRouting();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.UseEndpoints(endpoints =>
