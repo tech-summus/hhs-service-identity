@@ -19,8 +19,8 @@ internal static class DbContextFactoryHelper
                 , $"..{Path.DirectorySeparatorChar}Hhs.{serviceName}.Http.Host{Path.DirectorySeparatorChar}Properties"))
             .AddJsonFile("launchSettings.json")
             .Build();
-        var environmentName = targetLaunchSetting[$"profiles:{serviceName}-Dev:environmentVariables:ASPNETCORE_ENVIRONMENT"];
-        Console.WriteLine($"ASPNETCORE_ENVIRONMENT:{targetLaunchSetting[$"profiles:{serviceName}-Dev:environmentVariables:ASPNETCORE_ENVIRONMENT"]}");
+        var environmentName = targetLaunchSetting[$"profiles:{serviceName}:environmentVariables:ASPNETCORE_ENVIRONMENT"];
+        Console.WriteLine($"ASPNETCORE_ENVIRONMENT:{targetLaunchSetting[$"profiles:{serviceName}:environmentVariables:ASPNETCORE_ENVIRONMENT"]}");
 
         var builder = new ConfigurationBuilder()
             .SetBasePath(Path.Combine(Directory.GetCurrentDirectory()
