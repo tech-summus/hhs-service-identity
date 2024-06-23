@@ -21,6 +21,37 @@ public static class EfCoreServiceCollectionExtensions
         // override DefaultBasicDataSeeder
         services.AddTransient<IBasicDataSeeder, EfCoreSeederService>();
 
+        AddAuthServerJwtDatabaseConfiguration(services, configuration);
+
+        // Must be Scoped => Cannot consume any scoped service and CurrentUser object creation on constructor
+        services.AddTransient<IAppUserRepository, AppUserRepository>();
+        services.AddTransient<IAppRoleRepository, AppRoleRepository>();
+
+        services.AddDbContext<IdentityServiceDbContext>(options =>
+            {
+                options.UseNpgsql(configuration.GetConnectionString(EfCoreDbProperties.ConnectionStringName), sqlOptions =>
+                {
+                    sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory");
+                    sqlOptions.MigrationsAssembly(typeof(IdentityServiceDbContext).Assembly.GetName().Name);
+                    sqlOptions.EnableRetryOnFailure(10, TimeSpan.FromSeconds(6), errorCodesToAdd: null);
+                    sqlOptions.CommandTimeout(30000);
+                    sqlOptions.MaxBatchSize(100);
+                });
+                // options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
+                options.EnableSensitiveDataLogging(false);
+            }
+            , contextLifetime: ServiceLifetime.Scoped // Must be Scoped => Cannot consume any scoped service and CurrentUser object creation on constructor
+            , optionsLifetime: ServiceLifetime.Singleton
+        );
+
+        // Must be Scoped => Cannot consume any scoped service and CurrentUser object creation on constructor
+        services.AddScoped<IFakeRepository, EfCoreFakeRepository>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddAuthServerJwtDatabaseConfiguration(this IServiceCollection services, IConfiguration configuration)
+    {
         services.AddDbContext<IdentityAppDbContext>(options =>
         {
             options.UseNpgsql(configuration.GetConnectionString(EfCoreDbProperties.ConnectionStringName), sqlOptions =>
@@ -34,30 +65,6 @@ public static class EfCoreServiceCollectionExtensions
             // options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
             options.EnableSensitiveDataLogging(false);
         });
-
-        // Must be Scoped => Cannot consume any scoped service and CurrentUser object creation on constructor
-        services.AddTransient<IAppUserRepository, AppUserRepository>();
-        services.AddTransient<IAppRoleRepository, AppRoleRepository>();
-
-        services.AddDbContext<IdentityServiceDbContext>(options =>
-        {
-            options.UseNpgsql(configuration.GetConnectionString(EfCoreDbProperties.ConnectionStringName), sqlOptions =>
-            {
-                sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory");
-                sqlOptions.MigrationsAssembly(typeof(IdentityServiceDbContext).Assembly.GetName().Name);
-                sqlOptions.EnableRetryOnFailure(10, TimeSpan.FromSeconds(6), errorCodesToAdd: null);
-                sqlOptions.CommandTimeout(30000);
-                sqlOptions.MaxBatchSize(100);
-            });
-            // options.UseLoggerFactory(LoggerFactory.Create(builder => builder.AddConsole()));
-            options.EnableSensitiveDataLogging(false);
-        }
-        , contextLifetime: ServiceLifetime.Scoped // Must be Scoped => Cannot consume any scoped service and CurrentUser object creation on constructor
-        , optionsLifetime: ServiceLifetime.Singleton
-        );
-
-        // Must be Scoped => Cannot consume any scoped service and CurrentUser object creation on constructor
-        services.AddScoped<IFakeRepository, EfCoreFakeRepository>();
 
         return services;
     }
