@@ -8,6 +8,7 @@ using Hhs.IdentityService.EntityFrameworkCore.Context;
 using Hhs.Shared.Hosting;
 using Hhs.Shared.Hosting.Microservices;
 using Hhs.Shared.Hosting.Microservices.Middlewares;
+using HsnSoft.Base.AspNetCore.Tracing;
 using Microsoft.AspNetCore.Identity;
 
 namespace Hhs.IdentityService;
@@ -73,6 +74,7 @@ public sealed class Startup
         }
 
         /*Middleware*/
+        app.UseCorrelationId();
         app.UseMiddleware<RequestResponseLoggerMiddleware>();
         app.UseLocalizationMiddleware();
         app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
