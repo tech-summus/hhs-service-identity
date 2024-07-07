@@ -5,9 +5,9 @@ using Hhs.IdentityService.Domain.AppUserDomain.Entities;
 using Hhs.IdentityService.Domain.AppUserDomain.Exceptions;
 using Hhs.IdentityService.EntityFrameworkCore.Context;
 using Hhs.IdentityService.EntityFrameworkCore.Setup;
-using Hhs.Shared.Helper.Utils;
 using HsnSoft.Base.Data;
 using HsnSoft.Base.Logging;
+using HsnSoft.Base.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -97,7 +97,7 @@ public sealed class EfCoreSeederService : IBasicDataSeeder
                         if (!result.Succeeded) throw new AppRoleIdentityException(result.Errors);
 
                         await roleManager.AddClaimAsync(draftAppRole, new Claim("role_name",
-                            StringOperations.FirstCharCapitalize(seedRole.Name, new[] { "-", "_" })));
+                            StringHelper.FirstCharCapitalize(seedRole.Name, new[] { "-", "_" })));
 
                         logger.LogDebug("EfCoreSeeder | SEED ROLE -> {RoleName} added", seedRole.Name);
                     }

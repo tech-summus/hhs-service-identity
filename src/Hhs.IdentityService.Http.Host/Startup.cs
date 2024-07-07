@@ -8,6 +8,7 @@ using Hhs.IdentityService.EntityFrameworkCore.Context;
 using Hhs.Shared.Hosting;
 using Hhs.Shared.Hosting.Microservices;
 using Hhs.Shared.Hosting.Microservices.Middlewares;
+using Hhs.Shared.Hosting.Middlewares;
 using HsnSoft.Base.AspNetCore.Tracing;
 using Microsoft.AspNetCore.Identity;
 
@@ -26,7 +27,7 @@ public sealed class Startup
 
     public IServiceProvider ConfigureServices(IServiceCollection services)
     {
-        services.ConfigureMicroserviceHost()
+        services.ConfigureMicroserviceHost(Configuration)
             .AddAdvancedController(Configuration, typeof(Startup))
             .AddJwtServerAuthentication(Configuration, WebHostEnvironment, "audience-service-identity")
             .AddAuthorization()
