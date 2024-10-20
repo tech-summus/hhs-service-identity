@@ -43,6 +43,8 @@ FROM base AS final
 WORKDIR /app
 COPY --chown=1000:1000 --from=build-stage /build-source/publish .
 
+RUN chown -R 1000:1000 /app
+RUN chmod 755 /app
 USER 1000
 
 ENTRYPOINT ["dotnet", "Hhs.IdentityService.Http.Host.dll"]
